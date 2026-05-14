@@ -67,7 +67,7 @@ End user laptop                              Render (your free server)
 
 ## Phase 1 — Push this folder to GitHub  `[ ]`
 
-**Target repo:** <https://github.com/rakshi886/Job-Hunter> (private, empty)
+**Target repo:** <https://github.com/rakshi886/Job-Cold-Email> (private, empty)
 
 ### Run it yourself (PowerShell)
 
@@ -77,7 +77,7 @@ git init -b main
 git add .
 git status                                  # SANITY CHECK — see below
 git commit -m "Initial license server + admin tools"
-git remote add origin https://github.com/rakshi886/Job-Hunter.git
+git remote add origin https://github.com/rakshi886/Job-Cold-Email.git
 git push -u origin main
 ```
 
@@ -111,7 +111,7 @@ Working directory:
   C:\Users\raksh\OneDrive\Documents\Claude\Projects\Cold Email\JobHunter-Admin
 
 Target repo (private, currently empty):
-  https://github.com/rakshi886/Job-Hunter
+  https://github.com/rakshi886/Job-Cold-Email
 
 ## CRITICAL safety check
 
@@ -129,13 +129,13 @@ Before pushing:
   1. Verify Git for Windows is installed: `git --version`. If missing, tell me.
   2. `git rev-parse --is-inside-work-tree`. If `true`, the folder already has a
      repo — run `git remote -v` and confirm it points at
-     github.com/rakshi886/Job-Hunter. If origin points anywhere else, ASK
+     github.com/rakshi886/Job-Cold-Email. If origin points anywhere else, ASK
      ME first.
   3. `git init -b main`  (only if step 2 errored)
   4. `git add .`
   5. Safety check (above). If clean, continue.
   6. `git commit -m "Initial license server + admin tools"`
-  7. `git remote add origin https://github.com/rakshi886/Job-Hunter.git`
+  7. `git remote add origin https://github.com/rakshi886/Job-Cold-Email.git`
   8. `git push -u origin main`
 
 ## Auth
@@ -154,7 +154,7 @@ handle that. Don't try to script auth.
 
 Paste all three to me at the end:
   - `git status` showing "up to date with 'origin/main'"
-  - `git ls-remote https://github.com/rakshi886/Job-Hunter.git` showing main
+  - `git ls-remote https://github.com/rakshi886/Job-Cold-Email.git` showing main
   - `git log --oneline -1`
 ````
 
@@ -175,7 +175,7 @@ Paste all three to me at the end:
 
 1. Go to <https://render.com> → sign up with your GitHub account.
 2. Click **New → Blueprint**.
-3. Connect repo `rakshi886/Job-Hunter`.
+3. Connect repo `rakshi886/Job-Cold-Email`.
 4. Render auto-reads `license_server/render.yaml` and asks for three env vars:
 
    - **`PRIVATE_KEY_PEM`** — paste contents of `keys/private_key.pem`

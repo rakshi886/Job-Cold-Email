@@ -1,5 +1,9 @@
 # Render Blueprint — one-click deploy.
 # Push this folder to a GitHub repo, then on Render: New → Blueprint → connect repo.
+#
+# NOTE — Render free tier does NOT support persistent disks. The SQLite DB lives
+# in the container's ephemeral filesystem and resets if the container restarts.
+# For production persistence, switch to Neon (free Postgres) — see CLAUDE.md.
 services:
   - type: web
     name: jobhunter-license
@@ -17,9 +21,3 @@ services:
         sync: false               # YOU set this from your locally-generated keypair
       - key: PUBLIC_KEY_PEM
         sync: false               # same — set after running generate_keypair.py
-      - key: LICENSE_DB_DIR
-        value: /var/data
-    disk:
-      name: license-data
-      mountPath: /var/data
-      sizeGB: 1

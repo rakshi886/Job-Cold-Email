@@ -1,5 +1,5 @@
 """
-license_admin.py — CLI tool for Rakshith to manage JobHunter license keys.
+license_admin.py - CLI tool for Rakshith to manage JobHunter license keys.
 
 Talks to your deployed Render license server. Reads SERVER_URL and ADMIN_TOKEN
 from a local .env file (or environment vars).
@@ -28,6 +28,15 @@ import os
 import sys
 from pathlib import Path
 
+# Fix Windows console encoding so the check marks and box-drawing chars
+# don't crash on the default cp1252 code page.
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError):
+        pass
+
 try:
     import requests
 except ImportError:
@@ -35,7 +44,7 @@ except ImportError:
     sys.exit(1)
 
 
-# ── Read .env if present ─────────────────────────────────────────────────────
+# Read .env if present
 ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 if ENV_FILE.exists():
     for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
@@ -62,7 +71,7 @@ def _hdrs():
     return {"X-Admin-Token": ADMIN_TOKEN, "Content-Type": "application/json"}
 
 
-def _call(method: str, path: str, json_body=None, params=None):
+def _call(method, path, json_body=None, params=None):
     url = f"{SERVER_URL}{path}"
     try:
         if method == "GET":
@@ -87,7 +96,6 @@ def _call(method: str, path: str, json_body=None, params=None):
     return data
 
 
-# ── Subcommands ──────────────────────────────────────────────────────────────
 def cmd_generate(args):
     _check_config()
     body = {
@@ -114,7 +122,8 @@ def cmd_generate(args):
 
 def cmd_list(args):
     _check_config()
-    res = _call("GET", "/api/admin/keys", params={"status": args.status} if args.status else None)
+    res = _call("GET", "/api/admin/keys",
+                params={"status": args.status} if args.status else None)
     rows = res.get("keys", [])
     if not rows:
         print("(no keys)")
@@ -130,7 +139,7 @@ def cmd_list(args):
         else:
             status = "available"
         cust = (r.get("customer_name") or "")[:24]
-        act  = (r.get("activated_at") or "")[:19]
+        act = (r.get("activated_at") or "")[:19]
         print(f"{r['key']:<28} {status:<10} {cust:<25} {act:<22}")
     print()
     print(f"Total: {len(rows)}")
@@ -160,8 +169,8 @@ def cmd_inspect(args):
         print(f"Recent activation attempts ({len(attempts)}):")
         for a in attempts:
             mark = "✓" if a["success"] else "✗"
-            print(f"  {mark} {a['attempted_at']}  ip={a['ip'] or '-':<15}  "
-                  f"{a['error'] or 'ok'}")
+            ip = a['ip'] or '-'
+            print(f"  {mark} {a['attempted_at']}  ip={ip:<15}  {a['error'] or 'ok'}")
     print()
 
 
@@ -185,7 +194,6 @@ def cmd_stats(args):
     print()
 
 
-# ── Entry point ──────────────────────────────────────────────────────────────
 def main():
     p = argparse.ArgumentParser(description="JobHunter license admin tool")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -194,7 +202,8 @@ def main():
     g.add_argument("--customer", help="Customer name (recommended)")
     g.add_argument("--email", help="Customer email")
     g.add_argument("--notes", help="Free-text notes")
-    g.add_argument("--count", type=int, default=1, help="How many to generate (default 1)")
+    g.add_argument("--count", type=int, default=1,
+                   help="How many to generate (default 1)")
     g.add_argument("--valid-days", type=int, dest="valid_days",
                    help="Activation window in days (default: never expires)")
     g.set_defaults(func=cmd_generate)
@@ -207,7 +216,10 @@ def main():
     i.add_argument("key")
     i.set_defaults(func=cmd_inspect)
 
-    r = sub.add_parser("revoke", help="Revoke a key (cannot activate, existing installs unaffected)")
+    r = sub.add_parser(
+        "revoke",
+        help="Revoke a key (cannot activate; existing installs unaffected)",
+    )
     r.add_argument("key")
     r.add_argument("--reason")
     r.set_defaults(func=cmd_revoke)

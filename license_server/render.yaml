@@ -1,0 +1,25 @@
+# Render Blueprint — one-click deploy.
+# Push this folder to a GitHub repo, then on Render: New → Blueprint → connect repo.
+services:
+  - type: web
+    name: jobhunter-license
+    runtime: python
+    plan: free
+    rootDir: license_server
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 60
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: ADMIN_TOKEN
+        generateValue: true       # Render auto-generates a strong random token
+      - key: PRIVATE_KEY_PEM
+        sync: false               # YOU set this from your locally-generated keypair
+      - key: PUBLIC_KEY_PEM
+        sync: false               # same — set after running generate_keypair.py
+      - key: LICENSE_DB_DIR
+        value: /var/data
+    disk:
+      name: license-data
+      mountPath: /var/data
+      sizeGB: 1
